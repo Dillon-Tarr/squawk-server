@@ -1,0 +1,3 @@
+{
+  "mongoURI": "mongodb+srv://<username>:<password>@cluster0.wp4jl.mongodb.net/<dbname>?retryWrites=true&w=majority"
+}
