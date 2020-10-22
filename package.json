@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/Dillon-Tarr/squawk-server#readme",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^5.0.0",
     "config": "^3.3.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.8",
     "node": "^14.13.0",
+    "node-gyp": "^7.1.2",
     "nodemon": "^2.0.4"
   }
 }
