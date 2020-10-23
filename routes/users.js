@@ -72,14 +72,14 @@ router.put('/:_id/request-friend', auth, async (req, res) => {
 router.put('/:_id/cancel-friend-request', auth, async (req, res) => {
   try {
     let unRequestedFriend = await User.findOneAndUpdate(
-      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
+      { username: req.body.username },
       {
         $pull: { incomingFriendRequests: req.user.username }
       });
     if (unRequestedFriend) unRequestedFriend.save();
     let user = User.findByIdAndUpdate(req.params._id,
       {
-        $pull: { outgoingFriendRequests: unRequestedFriend.username }
+        $pull: { outgoingFriendRequests: req.body.username }
       },
       {new: true});
     await user.save();
@@ -94,13 +94,13 @@ router.put('/:_id/cancel-friend-request', auth, async (req, res) => {
 router.put('/:_id/accept-friend-request', auth, async (req, res) => {
   try {
     let newFriend = await User.findOneAndUpdate(
-      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
+      { username: req.body.username },
       {
         $pull: { outgoingFriendRequests: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.params._id,
       {
-        $pull: { incomingFriendRequests: req.body.usernameOrEmailAddress }
+        $pull: { incomingFriendRequests: req.body.username }
       },
       {new: true});
     user.save();
@@ -119,19 +119,42 @@ router.put('/:_id/accept-friend-request', auth, async (req, res) => {
 router.put('/:_id/decline-friend-request', auth, async (req, res) => {
   try {
     let notFriend = await User.findOneAndUpdate(
-      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
+      { username: req.body.username },
       {
         $pull: { outgoingFriendRequests: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.params._id,
       {
-        $pull: { incomingFriendRequests: req.body.usernameOrEmailAddress }
+        $pull: { incomingFriendRequests: req.body.username }
       },
       {new: true});
     if (notFriend) notFriend.save();
     user.save();
 
     return res.send({ incomingFriendRequests: user.incomingFriendRequests });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Remove friend and respond with updated friends
+router.put('/:_id/remove-friend', auth, async (req, res) => {
+  try {
+    let exFriend = await User.findOneAndUpdate(
+      { username: req.body.username },
+      {
+        $pull: { friends: req.user.username }
+      });
+    let user = await User.findByIdAndUpdate(req.params._id,
+      {
+        $pull: { friends: req.body.username }
+      },
+      {new: true});
+    if (exFriend) exFriend.save();
+    user.save();
+
+    return res.send({ friends: user.friends });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
