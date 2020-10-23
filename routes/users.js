@@ -45,6 +45,29 @@ router.post('/', async (req, res) => {
   }
 });
 
+//Request a new friend by either username or email address
+router.put('/:_id/request-friend', auth, async (req, res) => {
+  try {
+    let requestedFriend = await User.findOneAndUpdate(
+      { $or: [{ username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress }]},
+      {
+        $push: { incomingFriendRequests: req.user.username }
+      });
+    if (!requestedFriend) return res.status(404).send('There is no registered user with that username/email address.');
+    requestedFriend.save();
+    let user = User.findByIdAndUpdate(req.params._id,
+      {
+        $push: { outgoingFriendRequests: requestedFriend.username }
+      },
+      {new: true});
+    await user.save();
+    return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Get the online status of all friends
 router.get('/:_id/online-friends', auth, async (req, res) => {
   try {
