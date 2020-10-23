@@ -107,8 +107,31 @@ router.put('/:_id/accept-friend-request', auth, async (req, res) => {
     if (!newFriend) return res.status(404).send('The user whose friend request you accepted is no longer registered.');
     user.friends.push(newFriend.username);
     newFriend.save();
-    await user.save();
+    user.save();
     return res.send({ incomingFriendRequests: user.incomingFriendRequests, friends: user.friends });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Decline incoming friend request and respond with updated incoming friend requests
+router.put('/:_id/decline-friend-request', auth, async (req, res) => {
+  try {
+    let notFriend = await User.findOneAndUpdate(
+      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
+      {
+        $pull: { outgoingFriendRequests: req.user.username }
+      });
+    let user = await User.findByIdAndUpdate(req.params._id,
+      {
+        $pull: { incomingFriendRequests: req.body.usernameOrEmailAddress }
+      },
+      {new: true});
+    if (notFriend) notFriend.save();
+    user.save();
+
+    return res.send({ incomingFriendRequests: user.incomingFriendRequests });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
