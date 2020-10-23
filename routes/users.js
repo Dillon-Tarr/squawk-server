@@ -27,6 +27,8 @@ router.post('/', async (req, res) => {
       myBirds: [],
       birdsIWatch: [],
       friends: [],
+      incomingFriendRequests: [],
+      outgoingFriendRequests: [],
       posts: []
     });
     await user.save();
@@ -36,7 +38,27 @@ router.post('/', async (req, res) => {
     return res
       .header('x-auth-token', token)
       .header('access-control-expose-headers', 'x-auth-token')
-      .send({ _id: user._id, username: user.username, emailAddress: user.emailAddress, isOnline: user.isOnline, profilePicture: user.profilePicture, aboutMe: user.aboutMe, birdCall: user.birdCall, myBirds: user.myBirds, birdsIWatch: user.birdsIWatch, friends: user.friends, posts: user.posts });
+      .send({ _id: user._id, username: user.username, emailAddress: user.emailAddress, isOnline: user.isOnline, profilePicture: user.profilePicture, aboutMe: user.aboutMe, birdCall: user.birdCall, myBirds: user.myBirds, birdsIWatch: user.birdsIWatch, friends: user.friends, incomingFriendRequests: user.incomingFriendRequests, outgoingFriendRequests: user.outgoingFriendRequests, posts: user.posts });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Get the online status of all friends
+router.get('/:_id/online-friends', auth, async (req, res) => {
+  try {
+  const user = User.findOneById(req.params._id);
+  const friends = await user.friends;
+  let friendsAndOnlineStatuses = [];
+  for(let i = 0; i < friends.length; i++){
+    let friend = User.findOne({ username: friends[i].username });
+    friendsAndOnlineStatuses.push({
+      username: friend.username,
+      isOnline: friend.isOnline
+    });
+  }
+  return res.send({ friendsAndOnlineStatuses });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);

@@ -14,12 +14,14 @@ const userSchema = new mongoose.Schema({
   myBirds:  { type: Array, required: false, unique: false },
   birdsIWatch: { type: Array, required: false, unique: false },
   friends: { type: Array, required: false, unique: false },
+  incomingFriendRequests: { type: Array, required: false, unique: false },
+  outgoingFriendRequests: { type: Array, required: false, unique: false },
   posts: { type: Array, required: false, unique: false },
   joinedDate: { type: Date, default: Date.now }
 });
 
 userSchema.methods.generateAuthToken = () => {
-  return jwt.sign({ _id: user._id, username: user.username }, config.get('jwtSecret'));
+  return jwt.sign({ _id: this._id, username: this.username }, config.get('jwtSecret'));
  };
 
 const User = mongoose.model('User', userSchema);
@@ -36,6 +38,8 @@ function validateUser(user) {
   myBirds: Joi.array(),
   birdsIWatch: Joi.array(),
   friends: Joi.array(),
+  incomingFriendRequests: Joi.array(),
+  outgoingFriendRequests: Joi.array(),
   posts: Joi.array()
   });
   return schema.validate(user);
