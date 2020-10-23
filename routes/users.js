@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-//Request a new friend by either username or email address
+//Request a new friend by either username or email address and respond with updated outgoing friend requests
 router.put('/:_id/request-friend', auth, async (req, res) => {
   try {
     let requestedFriend = await User.findOneAndUpdate(
@@ -58,6 +58,28 @@ router.put('/:_id/request-friend', auth, async (req, res) => {
     let user = User.findByIdAndUpdate(req.params._id,
       {
         $push: { outgoingFriendRequests: requestedFriend.username }
+      },
+      {new: true});
+    await user.save();
+    return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Cancel pending outgoing friend request and respond with updated outgoing friend requests
+router.put('/:_id/cancel-friend-request', auth, async (req, res) => {
+  try {
+    let unRequestedFriend = await User.findOneAndUpdate(
+      { $or: [{ username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress }]},
+      {
+        $pull: { incomingFriendRequests: req.user.username }
+      });
+    if (unRequestedFriend) unRequestedFriend.save();
+    let user = User.findByIdAndUpdate(req.params._id,
+      {
+        $pull: { outgoingFriendRequests: unRequestedFriend.username }
       },
       {new: true});
     await user.save();
