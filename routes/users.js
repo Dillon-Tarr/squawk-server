@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
 router.put('/:_id/request-friend', auth, async (req, res) => {
   try {
     let requestedFriend = await User.findOneAndUpdate(
-      { $or: [{ username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress }]},
+      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
       {
         $push: { incomingFriendRequests: req.user.username }
       });
@@ -72,7 +72,7 @@ router.put('/:_id/request-friend', auth, async (req, res) => {
 router.put('/:_id/cancel-friend-request', auth, async (req, res) => {
   try {
     let unRequestedFriend = await User.findOneAndUpdate(
-      { $or: [{ username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress }]},
+      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
       {
         $pull: { incomingFriendRequests: req.user.username }
       });
@@ -84,6 +84,31 @@ router.put('/:_id/cancel-friend-request', auth, async (req, res) => {
       {new: true});
     await user.save();
     return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Accept incoming friend request and respond with updated incoming friend requests and updated friends
+router.put('/:_id/accept-friend-request', auth, async (req, res) => {
+  try {
+    let newFriend = await User.findOneAndUpdate(
+      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
+      {
+        $pull: { outgoingFriendRequests: req.user.username }
+      });
+    let user = await User.findByIdAndUpdate(req.params._id,
+      {
+        $pull: { incomingFriendRequests: req.body.usernameOrEmailAddress }
+      },
+      {new: true});
+    user.save();
+    if (!newFriend) return res.status(404).send('The user whose friend request you accepted is no longer registered.');
+    user.friends.push(newFriend.username);
+    newFriend.save();
+    await user.save();
+    return res.send({ incomingFriendRequests: user.incomingFriendRequests, friends: user.friends });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
