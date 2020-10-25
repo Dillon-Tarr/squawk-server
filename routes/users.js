@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 
 //Create new user
+//VERIFIED WORKING
 router.post('/', async (req, res) => {
   try {
     const { error } = validateUser(req.body);
@@ -46,17 +47,19 @@ router.post('/', async (req, res) => {
 });
 
 //Delete user account (after making very sure the user wants to permanently delete the account)
+//VERIFIED WORKING
 router.delete('/delete-account', auth, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user._id);
     if (deletedUser) return res.send( `User "${deletedUser.username}" deleted successfully.` );
-    
+
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
 //Request a new friend by either username or email address and respond with updated outgoing friend requests
+//VERIFIED WORKING
 router.put('/request-friend', auth, async (req, res) => {
   try {
     let requestedFriend = await User.findOneAndUpdate(
@@ -66,12 +69,12 @@ router.put('/request-friend', auth, async (req, res) => {
       });
     if (!requestedFriend) return res.status(404).send('There is no registered user with that username/email address.');
     requestedFriend.save();
-    let user = User.findByIdAndUpdate(req.user._id,
+    let user = await User.findByIdAndUpdate(req.user._id,
       {
         $push: { outgoingFriendRequests: requestedFriend.username }
       },
       {new: true});
-    await user.save();
+    user.save();
     return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
 
   } catch (ex) {
@@ -80,6 +83,7 @@ router.put('/request-friend', auth, async (req, res) => {
 });
 
 //Cancel pending outgoing friend request and respond with updated outgoing friend requests
+//VERIFIED WORKING
 router.put('/cancel-friend-request', auth, async (req, res) => {
   try {
     let unRequestedFriend = await User.findOneAndUpdate(
@@ -88,12 +92,12 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
         $pull: { incomingFriendRequests: req.user.username }
       });
     if (unRequestedFriend) unRequestedFriend.save();
-    let user = User.findByIdAndUpdate(req.user._id,
+    let user = await User.findByIdAndUpdate(req.user._id,
       {
         $pull: { outgoingFriendRequests: req.body.username }
       },
       {new: true});
-    await user.save();
+    user.save();
     return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
 
   } catch (ex) {
@@ -102,12 +106,14 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
 });
 
 //Accept incoming friend request and respond with updated incoming friend requests and updated friends
+//VERIFIED WORKING
 router.put('/accept-friend-request', auth, async (req, res) => {
   try {
     let newFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pull: { outgoingFriendRequests: req.user.username }
+        $pull: { outgoingFriendRequests: req.user.username },
+        $push: { friends: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.user._id,
       {
@@ -127,6 +133,7 @@ router.put('/accept-friend-request', auth, async (req, res) => {
 });
 
 //Decline incoming friend request and respond with updated incoming friend requests
+//VERIFIED WORKING
 router.put('/decline-friend-request', auth, async (req, res) => {
   try {
     let notFriend = await User.findOneAndUpdate(
@@ -150,6 +157,7 @@ router.put('/decline-friend-request', auth, async (req, res) => {
 });
 
 //Remove friend and respond with updated friends
+//VERIFIED WORKING
 router.put('/remove-friend', auth, async (req, res) => {
   try {
     let exFriend = await User.findOneAndUpdate(
@@ -175,8 +183,8 @@ router.put('/remove-friend', auth, async (req, res) => {
 //Get the online status of all friends
 router.get('/online-friends', auth, async (req, res) => {
   try {
-  const user = User.findById(req.user._id);
-  const friends = await user.friends;
+  const user = await User.findById(req.user._id);
+  const friends = user.friends;
   let friendsAndOnlineStatuses = [];
   for(let i = 0; i < friends.length; i++){
     let friend = User.findOne({ username: friends[i].username });
@@ -219,7 +227,7 @@ router.put('/update-password', auth, async (req, res) => {
     { new: true }
     );
 
-  return res.send( "Password updated successfully." );
+  return res.send( `User "${user.username}" password updated successfully.` );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);

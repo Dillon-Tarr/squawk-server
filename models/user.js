@@ -20,9 +20,9 @@ const userSchema = new mongoose.Schema({
   joinedDate: { type: Date, default: Date.now }
 });
 
-userSchema.methods.generateAuthToken = () => {
+userSchema.methods.generateAuthToken = function(){
   return jwt.sign({ _id: this._id, username: this.username }, config.get('jwtSecret'));
- };
+};
 
 const User = mongoose.model('User', userSchema);
 
