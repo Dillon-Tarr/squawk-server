@@ -45,6 +45,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+//Delete user account (after making very sure the user wants to permanently delete the account)
+router.delete('/delete-account', auth, async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.user._id);
+    if (deletedUser) return res.send( `User "${deletedUser.username}" deleted successfully.` );
+    
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Request a new friend by either username or email address and respond with updated outgoing friend requests
 router.put('/request-friend', auth, async (req, res) => {
   try {
