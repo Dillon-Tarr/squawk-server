@@ -1,0 +1,290 @@
+{
+	"info": {
+		"_postman_id": "2f125a73-697d-4fdd-93d0-d7ef95813338",
+		"name": "Squawk requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add new user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"YOITWORKSNOW!\",\r\n  \"password\": \"password\",\r\n  \"emailAddress\": \"WOohoooOOO@gmail.com\",\r\n  \"isOnline\": true,\r\n  \"profilePicture\": \"\",\r\n  \"aboutMe\": \"\",\r\n  \"birdCall\": \"\",\r\n  \"myBirds\": [],\r\n  \"birdsIWatch\": [],\r\n  \"friends\": [],\r\n  \"posts\": []\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate user login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"usernameOrEmailAddress\": \"FriendOfDill\",\r\n  \"password\": \"FriendOfDill\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request friend",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzY2NjQwMX0.eNiPq4ZxTcc6qcEdlnscn_x7f0ilQExqBxVallFZ1RQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"usernameOrEmailAddress\": \"FriendOfDill\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/request-friend",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"request-friend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel friend request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzY2NjQwMX0.eNiPq4ZxTcc6qcEdlnscn_x7f0ilQExqBxVallFZ1RQ"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"FriendOfDill\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/cancel-friend-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"cancel-friend-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Accept friend request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzY2NjQwMX0.eNiPq4ZxTcc6qcEdlnscn_x7f0ilQExqBxVallFZ1RQ",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"FriendOfDill\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/accept-friend-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"accept-friend-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Decline friend request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"DillyDill\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/decline-friend-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"decline-friend-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove friend",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"DillyDill\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/remove-friend",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"remove-friend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete account",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/delete-account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"delete-account"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
