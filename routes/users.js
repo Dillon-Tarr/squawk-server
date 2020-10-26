@@ -46,17 +46,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-//Get a user by ID
-router.get('/:id', auth, async (req, res) => {
+//Get signed in user's info
+router.get('/', auth, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
-  if (!user)
-  return res.status(400).send(`The user with id "${req.user._id}" does not exist.`);
-  return res.send(user);
+  let userSinPassword = {...user};
+  userSinPassword.password = "Haha, you no see.";
+  return res.send(userSinPassword);
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
   }
-}); 
+});
 
 //Delete user account (after making very sure the user wants to permanently delete the account)
 //VERIFIED WORKING
