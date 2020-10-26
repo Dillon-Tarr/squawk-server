@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
 router.get('/user-info', auth, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
-  let userSinPassword = {...user};
+  let userSinPassword = {...user.$__._doc};
   userSinPassword.password = "Haha, you no see.";
   return res.send(userSinPassword);
   } catch (ex) {
