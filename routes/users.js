@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
 });
 
 //Log out
+//VERIFIED WORKING
 router.put('/log-out', auth, async (req, res) => {
   try {
     let user = await User.findByIdAndUpdate(req.user._id,
@@ -61,7 +62,7 @@ router.put('/log-out', auth, async (req, res) => {
   }
 });
 
-//Get signed in user's info
+//Get signed-in user's info
 router.get('/user-info', auth, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
@@ -79,6 +80,30 @@ router.delete('/delete-account', auth, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user._id);
     if (deletedUser) return res.send( `User "${deletedUser.username}" deleted successfully.` );
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Create a new post
+//VERIFIED WORKING
+router.post('/create-post', auth, async (req, res) => {
+  try {
+    let post = {
+      author: req.user.username,
+      postTime: Date.now(),
+      text: req.body.text,
+      imageString: req.body.imageString,
+      likes: []
+    }
+    let user = await User.findByIdAndUpdate(req.user._id,
+      {
+        $push: { posts: post }
+      },
+      { new: true });
+    user.save();
+    res.send( user.posts );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
