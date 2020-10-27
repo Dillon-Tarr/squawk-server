@@ -131,6 +131,23 @@ router.delete('/delete-post', auth, async (req, res) => {
   }
 });
 
+//Get all friends' posts
+//VERIFIED WORKING
+router.get('/all-friends-posts', auth, async (req, res) => {
+  try {
+  const friends = await User.find( { friends: req.user.username } );
+  let allFriendsPosts = [];
+  for (let i = 0; i < friends.length; i++){
+    for (let j = 0; j < friends[i].posts.length; j++){
+      allFriendsPosts.push(friends[i].posts[j]);
+    }
+  }
+  return res.send( allFriendsPosts );
+  } catch (ex) {
+  return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Request a new friend by either username or email address and respond with updated outgoing friend requests
 //VERIFIED WORKING
 router.put('/request-friend', auth, async (req, res) => {

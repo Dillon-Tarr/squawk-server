@@ -64,6 +64,79 @@
 			"response": []
 		},
 		{
+			"name": "Get user info",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/user-info",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"user-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get friends' posts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/all-friends-posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"all-friends-posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create post",
 			"request": {
 				"method": "POST",
@@ -148,7 +221,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"usernameOrEmailAddress\": \"\"\r\n}",
+					"raw": "{\r\n    \"usernameOrEmailAddress\": \"Danimal\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -293,12 +366,12 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"DillyDill\"\r\n}",
+					"raw": "{\r\n    \"username\": \"Danimal\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -388,33 +461,6 @@
 						"api",
 						"users",
 						"delete-account"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get user info",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5000/api/users/user-info",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api",
-						"users",
-						"user-info"
 					]
 				}
 			},
