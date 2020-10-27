@@ -9,6 +9,7 @@ const postSchema = new mongoose.Schema({
   text: { type: String, required: false, unique: false },
   imageString: { type: String, required: false, unique: false },
   likes: { type: Array, required: false, unique: false },
+  updateTime: { type: Date, required: false, unique: false }
 });
 
 const userSchema = new mongoose.Schema({

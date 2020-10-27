@@ -62,14 +62,13 @@ router.post('/log-out', auth, async (req, res) => {
   }
 });
 
-//Get signed-in user's info
+//Get signed-in user's profile
 //VERIFIED WORKING
-router.get('/user-info', auth, async (req, res) => {
+router.get('/user-profile', auth, async (req, res) => {
   try {
-  const user = await User.findById(req.user._id);
-  let userSinPassword = {...user._doc};
-  userSinPassword.password = "Haha, you no see.";
-  return res.send(userSinPassword);
+  const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);});
+  return res.send( { userProfile: userProfile } );
+
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
   }
@@ -165,7 +164,7 @@ router.put('/like-post', auth, async (req, res) => {
   }
 });
 
-//Delete a post by postId (postId must be a STRING)
+//Delete a post by postId
 //VERIFIED WORKING
 router.delete('/delete-post', auth, async (req, res) => {
   try {
@@ -196,6 +195,21 @@ router.get('/all-friends-posts', auth, async (req, res) => {
     }
   }
   return res.send( allFriendsPosts );
+  } catch (ex) {
+  return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//Get profile information of all friends
+//VERIFIED WORKING
+router.get('/all-friends-profiles', auth, async (req, res) => {
+  try {
+  const friends = await User.find( { friends: req.user.username }, { password: 0, posts: 0, incomingFriendRequests: 0, outgoingFriendRequests: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' profile information: ${err}`);});
+  let allFriendsProfiles = [];
+  for (let i = 0; i < friends.length; i++){
+    allFriendsProfiles.push(friends[i]);
+  }
+  return res.send( { allFriendsProfiles: allFriendsProfiles } );
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
   }

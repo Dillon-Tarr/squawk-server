@@ -100,7 +100,7 @@
 			"response": []
 		},
 		{
-			"name": "Get user info",
+			"name": "Get user profile",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -109,7 +109,7 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzMDQ0OX0.HloKiYjFUvmZIWFMa0SNZKri_9540m8aySlKlNzGxu0",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs",
 						"type": "text"
 					}
 				],
@@ -118,7 +118,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/users/user-info",
+					"raw": "http://localhost:5000/api/users/user-profile",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -127,7 +127,7 @@
 					"path": [
 						"api",
 						"users",
-						"user-info"
+						"user-profile"
 					]
 				}
 			},
@@ -167,6 +167,45 @@
 						"api",
 						"users",
 						"all-friends-posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get friends' profiles",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/all-friends-profiles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"all-friends-profiles"
 					]
 				}
 			},
@@ -216,12 +255,12 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"postId\": \"5f987c3097b68825b0ee7544\",\r\n    \"newText\": \"Hey, it updated!\"\r\n}",
+					"raw": "{\r\n    \"postId\": \"5f98a7d6eb2cb0071c50ea36\",\r\n    \"newText\": \"I changed my umpteenth post, so now they're an updateTime.\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
