@@ -41,7 +41,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"usernameOrEmailAddress\": \"FriendOfDill\",\r\n  \"password\": \"FriendOfDill\"\r\n  }",
+					"raw": "{\r\n  \"usernameOrEmailAddress\": \"DillyDill\",\r\n  \"password\": \"DillyDill\"\r\n  }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -64,19 +64,91 @@
 			"response": []
 		},
 		{
+			"name": "Create post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"Sent successfully using Postman.\",\r\n    \"imageString\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/create-post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"create-post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"postIndex\": \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/delete-post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"delete-post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Request friend",
 			"request": {
 				"method": "PUT",
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzY2NjQwMX0.eNiPq4ZxTcc6qcEdlnscn_x7f0ilQExqBxVallFZ1RQ",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"usernameOrEmailAddress\": \"FriendOfDill\"\r\n}",
+					"raw": "{\r\n    \"usernameOrEmailAddress\": \"\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -250,6 +322,42 @@
 			"response": []
 		},
 		{
+			"name": "Log out",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/log-out",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"log-out"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete account",
 			"request": {
 				"method": "DELETE",
@@ -280,6 +388,33 @@
 						"api",
 						"users",
 						"delete-account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user info",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/users/user-info",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"user-info"
 					]
 				}
 			},

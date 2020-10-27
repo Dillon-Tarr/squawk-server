@@ -63,6 +63,7 @@ router.put('/log-out', auth, async (req, res) => {
 });
 
 //Get signed-in user's info
+//VERIFIED WORKING
 router.get('/user-info', auth, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
