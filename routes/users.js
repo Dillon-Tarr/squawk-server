@@ -46,6 +46,21 @@ router.post('/', async (req, res) => {
   }
 });
 
+//Log out
+router.put('/log-out', auth, async (req, res) => {
+  try {
+    let user = await User.findByIdAndUpdate(req.user._id,
+      {
+        isOnline: false
+      });
+    user.save();
+    res.send( `User "${user.username}" logged out successfully.` );
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Get signed in user's info
 router.get('/user-info', auth, async (req, res) => {
   try {
