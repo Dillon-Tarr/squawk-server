@@ -8,11 +8,12 @@ router.post('/', async (req, res) => {
   try {
   const { error } = validateLogin(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  let user = await User.findOne({ $or: [{ username: req.body.usernameOrEmailAddress}, { emailAddress: req.body.usernameOrEmailAddress }] });
-  
+  const user = await User.findOne({ $or: [{ username: req.body.usernameOrEmailAddress}, { emailAddress: req.body.usernameOrEmailAddress }] });
   if (!user) return res.status(400).send('Invalid login. Please try again.');
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send('Invalid login. Please try again.')
+  if (!validPassword) return res.status(400).send('Invalid login. Please try again.');
+  user.isOnline = true;
+  user.save();
   const token = user.generateAuthToken();
   res.send(token);
   

@@ -41,7 +41,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"usernameOrEmailAddress\": \"DillyDill\",\r\n  \"password\": \"DillyDill\"\r\n  }",
+					"raw": "{\r\n  \"usernameOrEmailAddress\": \"DillyDill\",\r\n  \"password\": \"password\"\r\n  }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -64,6 +64,42 @@
 			"response": []
 		},
 		{
+			"name": "Log out",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzMDQ0OX0.HloKiYjFUvmZIWFMa0SNZKri_9540m8aySlKlNzGxu0"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/log-out",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"log-out"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get user info",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -73,7 +109,7 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzMDQ0OX0.HloKiYjFUvmZIWFMa0SNZKri_9540m8aySlKlNzGxu0",
 						"type": "text"
 					}
 				],
@@ -149,7 +185,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"text\": \"Sent successfully using Postman.\",\r\n    \"imageString\": \"\"\r\n}",
+					"raw": "{\r\n    \"text\": \"This is my umpteenth post.\",\r\n    \"imageString\": \"\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -185,7 +221,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"postIndex\": \"0\",\r\n    \"newText\": \"I modified the text of the post at index 0.\"\r\n}",
+					"raw": "{\r\n    \"postId\": \"5f987c3097b68825b0ee7544\",\r\n    \"newText\": \"Hey, it updated!\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -221,7 +257,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"author\": \"DillyDill\",\r\n    \"postIndex\": \"0\"\r\n}",
+					"raw": "{\r\n    \"author\": \"DillyDill\",\r\n    \"postId\": \"5f987c3097b68825b0ee7544\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -257,7 +293,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"postIndex\": \"0\"\r\n}",
+					"raw": "{\r\n    \"postId\": \"5f987c3097b68825b0ee7547\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -461,42 +497,6 @@
 						"api",
 						"users",
 						"remove-friend"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Log out",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "x-auth-token",
-						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/api/users/log-out",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api",
-						"users",
-						"log-out"
 					]
 				}
 			},

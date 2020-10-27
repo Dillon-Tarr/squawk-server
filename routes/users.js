@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 
 //Log out
 //VERIFIED WORKING
-router.put('/log-out', auth, async (req, res) => {
+router.post('/log-out', auth, async (req, res) => {
   try {
     let user = await User.findByIdAndUpdate(req.user._id,
       {
@@ -93,7 +93,6 @@ router.post('/create-post', auth, async (req, res) => {
   try {
     let post = {
       author: req.user.username,
-      postTime: Date.now(),
       text: req.body.text,
       imageString: req.body.imageString,
       likes: []
@@ -111,12 +110,12 @@ router.post('/create-post', auth, async (req, res) => {
   }
 });
 
-//Edit a post by index (postIndex must be a STRING)
+//Edit a post by postId
 //VERIFIED WORKING
 router.put('/edit-post', auth, async (req, res) => {
   try {
-    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
-    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+    if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
+    if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
     if (!req.body.newText && !req.body.newImageString) return res.status(400).send('newText and/or newImageString must be supplied in the request body.');
     if (req.body.newText) {
       if (typeof req.body.newText !== "string") return res.status(400).send('The value of newText must be a string.');
@@ -125,53 +124,39 @@ router.put('/edit-post', auth, async (req, res) => {
       if (typeof req.body.newImageString !== "string") return res.status(400).send('The value of newImageString must be a string.');
     }
 
-    let postIndex = parseInt(req.body.postIndex);
-    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
-    let user = await User.findById(req.user._id);
-    if (postIndex + 1 > user.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of user.posts`);
-
-    let postsCopy = [...user.posts];
-    let updatedPost = postsCopy.splice(postIndex, 1);
-    updatedPost = updatedPost[0];
-    if (req.body.newText) updatedPost.text = req.body.newText;
-    if (req.body.newImageString) updatedPost.imageString = req.body.newImageString;
-    updatedPost.updateTime = Date.now();
-
-    user.posts.splice(postIndex, 1, updatedPost);
+    const user = await User.findById(req.user._id);
+    const postIndex = user.posts.findIndex((post) => post._id == req.body.postId);
+    if (postIndex === -1) return res.status(400).send(`User "${req.user.username}" has no post to edit with _id "${req.body.postId}".`);
+    if (req.body.newText) user.posts[postIndex].text = req.body.newText;
+    if (req.body.newImageString) user.posts[postIndex].imageString = req.body.newImageString;
+    user.posts[postIndex].updateTime = Date.now();
     user.save();
-    res.send( user.posts );
+    res.send( user.posts[postIndex] );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
-//Like a post by author and index (postIndex must be a STRING)
+//Like (or undo like) a post by author and postId
 //VERIFIED WORKING
 router.put('/like-post', auth, async (req, res) => {
   try {
     if (!req.body.author) return res.status(400).send('author must be supplied in the request body.');
     if (typeof req.body.author !== "string") return res.status(400).send('The value of author must be a string.');
-    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
-    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+    if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
+    if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
 
-    let postIndex = parseInt(req.body.postIndex);
-    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
-    let author = await User.findOne( { username: req.body.author } );
-    if (!author) return res.status(400).send(`There is no user with username ${req.body.author}.`);
-    if (postIndex + 1 > author.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of ${req.body.author}.posts`);
+    const author = await User.findOne( { username: req.body.author } );
+    const postIndex = author.posts.findIndex((post) => post._id == req.body.postId);
+    if (postIndex === -1) return res.status(400).send(`User "${req.body.author}" has no post with _id "${req.body.postId}".`);
 
-    let postsCopy = [...author.posts];
-    let updatedPost = postsCopy.splice(postIndex, 1);
-    updatedPost = updatedPost[0];
-
-    let indexOfUser = updatedPost.likes.indexOf(req.user.username);
-    if (indexOfUser === -1) updatedPost.likes.push(req.user.username);
+    const indexOfUser = author.posts[postIndex].likes.indexOf(req.user.username);
+    if (indexOfUser === -1) author.posts[postIndex].likes.push(req.user.username);
     else {
-      updatedPost.likes.splice(indexOfUser, 1);
+      author.posts[postIndex].likes.splice(indexOfUser, 1);
     }
-
-    author.posts.splice(postIndex, 1, updatedPost);
+    
     author.save();
     res.send( author.posts[postIndex] );
 
@@ -180,20 +165,19 @@ router.put('/like-post', auth, async (req, res) => {
   }
 });
 
-//Delete a post by index (postIndex must be a STRING)
+//Delete a post by postId (postId must be a STRING)
 //VERIFIED WORKING
 router.delete('/delete-post', auth, async (req, res) => {
   try {
-    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
-    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+    if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
+    if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
     
-    let postIndex = parseInt(req.body.postIndex);
-    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
-    let user = await User.findById(req.user._id);
-    if (postIndex + 1 > user.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of user.posts`);
+    const user = await User.findById(req.user._id);
+    const postIndex = user.posts.findIndex((post) => post._id == req.body.postId);
+    if (postIndex === -1) return res.status(400).send(`User "${req.user.username}" has no post to delete with _id "${req.body.postId}".`);
     user.posts.splice(postIndex, 1);
     user.save();
-    res.send( user.posts );
+    res.send( `Post with _id ${req.body.postId} deleted successfully.` );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);

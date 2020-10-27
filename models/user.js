@@ -3,6 +3,14 @@ const Joi = require('joi');
 const config = require('config');
 const jwt = require('jsonwebtoken');
 
+const postSchema = new mongoose.Schema({
+  author: { type: String, required: true, unique: false },
+  postTime: { type: Date, default: Date.now },
+  text: { type: String, required: false, unique: false },
+  imageString: { type: String, required: false, unique: false },
+  likes: { type: Array, required: false, unique: false },
+});
+
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, minlength: 6, maxlength: 18 },
   password: { type: String, required: true, unique: false },
@@ -16,7 +24,7 @@ const userSchema = new mongoose.Schema({
   friends: { type: Array, required: false, unique: false },
   incomingFriendRequests: { type: Array, required: false, unique: false },
   outgoingFriendRequests: { type: Array, required: false, unique: false },
-  posts: { type: Array, required: false, unique: false },
+  posts: { type: [postSchema], required: false, unique: false },
   joinedDate: { type: Date, default: Date.now }
 });
 
