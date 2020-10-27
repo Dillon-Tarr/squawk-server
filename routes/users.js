@@ -110,6 +110,26 @@ router.post('/create-post', auth, async (req, res) => {
   }
 });
 
+//Delete a post by index (postIndex must be a STRING)
+//VERIFIED WORKING
+router.delete('/delete-post', auth, async (req, res) => {
+  try {
+    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
+    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+    
+    let postIndex = parseInt(req.body.postIndex);
+    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
+    let user = await User.findById(req.user._id);
+    if (postIndex + 1 > user.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of user.posts`);
+    user.posts.splice(postIndex, 1);
+    user.save();
+    res.send( user.posts );
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Request a new friend by either username or email address and respond with updated outgoing friend requests
 //VERIFIED WORKING
 router.put('/request-friend', auth, async (req, res) => {
