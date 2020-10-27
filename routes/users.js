@@ -111,6 +111,41 @@ router.post('/create-post', auth, async (req, res) => {
   }
 });
 
+//Edit a post by index (postIndex must be a STRING)
+//VERIFIED WORKING
+router.put('/edit-post', auth, async (req, res) => {
+  try {
+    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
+    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+    if (!req.body.newText && !req.body.newImageString) return res.status(400).send('newText and/or newImageString must be supplied in the request body.');
+    if (req.body.newText) {
+      if (typeof req.body.newText !== "string") return res.status(400).send('The value of newText must be a string.');
+    }
+    if (req.body.newImageString) {
+      if (typeof req.body.newImageString !== "string") return res.status(400).send('The value of newImageString must be a string.');
+    }
+
+    let postIndex = parseInt(req.body.postIndex);
+    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
+    let user = await User.findById(req.user._id);
+    if (postIndex + 1 > user.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of user.posts`);
+
+    let postsCopy = [...user.posts];
+    let updatedPost = postsCopy.splice(postIndex, 1);
+    updatedPost = updatedPost[0];
+    if (req.body.newText) updatedPost.text = req.body.newText;
+    if (req.body.newImageString) updatedPost.imageString = req.body.newImageString;
+    updatedPost.updateTime = Date.now();
+
+    user.posts.splice(postIndex, 1, updatedPost);
+    user.save();
+    res.send( user.posts );
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Delete a post by index (postIndex must be a STRING)
 //VERIFIED WORKING
 router.delete('/delete-post', auth, async (req, res) => {

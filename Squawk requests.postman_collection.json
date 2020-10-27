@@ -173,6 +173,42 @@
 			"response": []
 		},
 		{
+			"name": "Edit post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"postIndex\": \"0\",\r\n    \"newText\": \"I modified the text of the post at index 0.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/edit-post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"edit-post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete post",
 			"request": {
 				"method": "DELETE",
@@ -185,7 +221,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"postIndex\": \"1\"\r\n}",
+					"raw": "{\r\n    \"postIndex\": \"0\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
