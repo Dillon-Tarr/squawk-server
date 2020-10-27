@@ -146,6 +146,40 @@ router.put('/edit-post', auth, async (req, res) => {
   }
 });
 
+//Like a post by author and index (postIndex must be a STRING)
+//VERIFIED WORKING
+router.put('/like-post', auth, async (req, res) => {
+  try {
+    if (!req.body.author) return res.status(400).send('author must be supplied in the request body.');
+    if (typeof req.body.author !== "string") return res.status(400).send('The value of author must be a string.');
+    if (!req.body.postIndex) return res.status(400).send('The HTTP request submitted had no value included for postIndex, or the value supplied equated to null -- e.g. the number 0');
+    if (typeof req.body.postIndex !== "string") return res.status(400).send('The value of postIndex must be a string, the reason being that "postIndex": 0 is considered null.');
+
+    let postIndex = parseInt(req.body.postIndex);
+    if (postIndex < 0) return res.status(400).send(`${req.body.postIndex} is not a valid index.`);
+    let author = await User.findOne( { username: req.body.author } );
+    if (!author) return res.status(400).send(`There is no user with username ${req.body.author}.`);
+    if (postIndex + 1 > author.posts.length) return res.status(400).send(`There is no existing post at index ${req.body.postIndex} of ${req.body.author}.posts`);
+
+    let postsCopy = [...author.posts];
+    let updatedPost = postsCopy.splice(postIndex, 1);
+    updatedPost = updatedPost[0];
+
+    let indexOfUser = updatedPost.likes.indexOf(req.user.username);
+    if (indexOfUser === -1) updatedPost.likes.push(req.user.username);
+    else {
+      updatedPost.likes.splice(indexOfUser, 1);
+    }
+
+    author.posts.splice(postIndex, 1, updatedPost);
+    author.save();
+    res.send( author.posts[postIndex] );
+
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //Delete a post by index (postIndex must be a STRING)
 //VERIFIED WORKING
 router.delete('/delete-post', auth, async (req, res) => {
