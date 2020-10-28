@@ -223,21 +223,44 @@ router.get('/all-friends-profiles', auth, async (req, res) => {
 //VERIFIED WORKING
 router.put('/request-friend', auth, async (req, res) => {
   try {
-    let requestedFriend = await User.findOneAndUpdate(
-      { $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] },
-      {
-        $push: { incomingFriendRequests: req.user.username }
-      });
-    if (!requestedFriend) return res.status(404).send('There is no registered user with that username/email address.');
-    requestedFriend.save();
-    let user = await User.findByIdAndUpdate(req.user._id,
-      {
-        $push: { outgoingFriendRequests: requestedFriend.username }
-      },
-      {new: true});
-    user.save();
-    return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+    let possibleFriend = await User.findOne({ $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] });
 
+    if (!possibleFriend) return res.status(404).send('There is no registered user with that username or email address.\nNote: Registered Squawk usernames and email addresses are case-sensitive.');
+    else if (possibleFriend.username == req.user.username) return res.status(403).send(`You can't request yourself as a friend!`);
+    else if (possibleFriend.friends.includes(req.user.username)) return res.status(403).send(`You cannot request ${possibleFriend.username} as a friend, because ${possibleFriend.username} is already your friend!`);
+    else if (possibleFriend.incomingFriendRequests.includes(req.user.username)) return res.status(403).send(`You have already asked ${possibleFriend.username} to be your friend!`);
+    else if (possibleFriend.outgoingFriendRequests.includes(req.user.username)){
+      const newFriend = await User.findByIdAndUpdate(possibleFriend._id,
+        {
+          $pullAll: { outgoingFriendRequests: [req.user.username] },
+          $pullAll: { incomingFriendRequests: [req.user.username] },
+          $push: { friends: req.user.username }
+        });
+      const user = await User.findByIdAndUpdate(req.user._id,
+        {
+          $pullAll: { outgoingFriendRequests: [possibleFriend.username] },
+          $pullAll: { incomingFriendRequests: [possibleFriend.username] },
+          $push: { friends: possibleFriend.username }
+        },
+        {new: true});
+      newFriend.save();
+      user.save();
+      return res.send({ status: `${possibleFriend.username} had already requested you as a friend, so you are now friends!`, outgoingFriendRequests: user.outgoingFriendRequests });
+    }
+    else {
+      const requestedFriend = await User.findByIdAndUpdate(possibleFriend._id,
+        {
+          $push: { incomingFriendRequests: req.user.username }
+        });
+      const user = await User.findByIdAndUpdate(req.user._id,
+        {
+          $push: { outgoingFriendRequests: requestedFriend.username }
+        },
+        {new: true});
+      requestedFriend.save();
+      user.save();
+      return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+    }
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
