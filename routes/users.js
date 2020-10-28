@@ -254,12 +254,12 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
     let unRequestedFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pull: { incomingFriendRequests: req.user.username }
+        $pullAll: { incomingFriendRequests: req.user.username }
       });
     if (unRequestedFriend) unRequestedFriend.save();
     let user = await User.findByIdAndUpdate(req.user._id,
       {
-        $pull: { outgoingFriendRequests: req.body.username }
+        $pullAll: { outgoingFriendRequests: req.body.username }
       },
       {new: true});
     user.save();
@@ -277,12 +277,12 @@ router.put('/accept-friend-request', auth, async (req, res) => {
     let newFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pull: { outgoingFriendRequests: req.user.username },
+        $pullAll: { outgoingFriendRequests: req.user.username },
         $push: { friends: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.user._id,
       {
-        $pull: { incomingFriendRequests: req.body.username }
+        $pullAll: { incomingFriendRequests: req.body.username }
       },
       {new: true});
     user.save();
@@ -304,11 +304,11 @@ router.put('/decline-friend-request', auth, async (req, res) => {
     let notFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pull: { outgoingFriendRequests: req.user.username }
+        $pullAll: { outgoingFriendRequests: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.user._id,
       {
-        $pull: { incomingFriendRequests: req.body.username }
+        $pullAll: { incomingFriendRequests: req.body.username }
       },
       {new: true});
     if (notFriend) notFriend.save();
@@ -328,11 +328,11 @@ router.put('/remove-friend', auth, async (req, res) => {
     let exFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pull: { friends: req.user.username }
+        $pullAll: { friends: req.user.username }
       });
     let user = await User.findByIdAndUpdate(req.user._id,
       {
-        $pull: { friends: req.body.username }
+        $pullAll: { friends: req.body.username }
       },
       {new: true});
     if (exFriend) exFriend.save();
