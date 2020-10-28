@@ -55,7 +55,7 @@ router.post('/log-out', auth, async (req, res) => {
         isOnline: false
       });
     user.save();
-    res.send( `User "${user.username}" logged out successfully.` );
+    return res.send( `User "${user.username}" logged out successfully.` );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -66,8 +66,8 @@ router.post('/log-out', auth, async (req, res) => {
 //VERIFIED WORKING
 router.get('/user-profile', auth, async (req, res) => {
   try {
-  const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);});
-  return res.send( { userProfile: userProfile } );
+  const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);} );
+  return res.send( userProfile ); //never change this line again
 
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -102,7 +102,7 @@ router.post('/create-post', auth, async (req, res) => {
       },
       { new: true });
     user.save();
-    res.send( user.posts );
+    return res.send( user.posts );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -130,7 +130,7 @@ router.put('/edit-post', auth, async (req, res) => {
     if (req.body.newImageString) user.posts[postIndex].imageString = req.body.newImageString;
     user.posts[postIndex].updateTime = Date.now();
     user.save();
-    res.send( user.posts[postIndex] );
+    return res.send( user.posts[postIndex] );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -157,7 +157,7 @@ router.put('/like-post', auth, async (req, res) => {
     }
     
     author.save();
-    res.send( author.posts[postIndex] );
+    return res.send( author.posts[postIndex] );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -176,25 +176,32 @@ router.delete('/delete-post', auth, async (req, res) => {
     if (postIndex === -1) return res.status(400).send(`User "${req.user.username}" has no post to delete with _id "${req.body.postId}".`);
     user.posts.splice(postIndex, 1);
     user.save();
-    res.send( `Post with _id ${req.body.postId} deleted successfully.` );
+    return res.send( `Post with _id ${req.body.postId} deleted successfully.` );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
-//Get all friends' posts
+//Get all friends' and user's posts, sorted chronologically
 //VERIFIED WORKING
-router.get('/all-friends-posts', auth, async (req, res) => {
+router.get('/posts', auth, async (req, res) => {
   try {
-  const friends = await User.find( { friends: req.user.username } );
-  let allFriendsPosts = [];
+  const friends = await User.find( { friends: req.user.username }, { _id: 0, posts: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' posts: ${err}`);} );
+  if (!friends) return res.send(`The user does not yet have friends from whom to get posts.`);
+  const user = await User.findById( req.user._id, { _id: 0, posts: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's posts: ${err}`);} );
+
+  let postsToDisplay = [];
   for (let i = 0; i < friends.length; i++){
     for (let j = 0; j < friends[i].posts.length; j++){
-      allFriendsPosts.push(friends[i].posts[j]);
+      postsToDisplay.push(friends[i].posts[j]);
     }
   }
-  return res.send( allFriendsPosts );
+  for (let i = 0; i < user.posts.length; i++){ postsToDisplay.push(user.posts[i]); }
+  postsToDisplay.sort((a, b) => a.postTime - b.postTime);
+  
+  return res.send( { postsToDisplay: postsToDisplay } );
+
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
   }
@@ -204,7 +211,8 @@ router.get('/all-friends-posts', auth, async (req, res) => {
 //VERIFIED WORKING
 router.get('/all-friends-profiles', auth, async (req, res) => {
   try {
-  const friends = await User.find( { friends: req.user.username }, { password: 0, posts: 0, incomingFriendRequests: 0, outgoingFriendRequests: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' profile information: ${err}`);});
+  const friends = await User.find( { friends: req.user.username }, { password: 0, posts: 0, incomingFriendRequests: 0, outgoingFriendRequests: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' profile information: ${err}`);} );
+  if (!friends) return res.send(`The user does not yet have friends from whom to get profile information.`);
   let allFriendsProfiles = [];
   for (let i = 0; i < friends.length; i++){
     allFriendsProfiles.push(friends[i]);
@@ -342,6 +350,7 @@ router.get('/online-friends', auth, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
   const friends = user.friends;
+  if (friends === []) return res.send(`The user does not yet have friends from whom to get online statuses.`);
   let friendsAndOnlineStatuses = [];
   for(let i = 0; i < friends.length; i++){
     let friend = User.findOne({ username: friends[i].username });

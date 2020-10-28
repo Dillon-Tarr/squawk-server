@@ -134,7 +134,7 @@
 			"response": []
 		},
 		{
-			"name": "Get friends' posts",
+			"name": "Get posts from friends and self",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -157,7 +157,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/users/all-friends-posts",
+					"raw": "http://localhost:5000/api/users/posts",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -166,7 +166,7 @@
 					"path": [
 						"api",
 						"users",
-						"all-friends-posts"
+						"posts"
 					]
 				}
 			},
@@ -260,7 +260,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"postId\": \"5f98a7d6eb2cb0071c50ea36\",\r\n    \"newText\": \"I changed my umpteenth post, so now they're an updateTime.\"\r\n}",
+					"raw": "{\r\n    \"postId\": \"5f98a7d6eb2cb0071c50ea36\",\r\n    \"newText\": \"I changed my umpteenth post, so now there's an updateTime.\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
