@@ -6,7 +6,6 @@ const express = require('express');
 const router = express.Router();
 
 //Create new user
-//VERIFIED WORKING
 router.post('/', async (req, res) => {
   try {
     const { error } = validateUser(req.body);
@@ -47,7 +46,6 @@ router.post('/', async (req, res) => {
 });
 
 //Log out
-//VERIFIED WORKING
 router.post('/log-out', auth, async (req, res) => {
   try {
     let user = await User.findByIdAndUpdate(req.user._id,
@@ -63,7 +61,6 @@ router.post('/log-out', auth, async (req, res) => {
 });
 
 //Get signed-in user's profile
-//VERIFIED WORKING
 router.get('/user-profile', auth, async (req, res) => {
   try {
   const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);} );
@@ -75,7 +72,6 @@ router.get('/user-profile', auth, async (req, res) => {
 });
 
 //Delete user account (after making very sure the user wants to permanently delete the account)
-//VERIFIED WORKING
 router.delete('/delete-account', auth, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user._id);
@@ -87,7 +83,6 @@ router.delete('/delete-account', auth, async (req, res) => {
 });
 
 //Create a new post
-//VERIFIED WORKING
 router.post('/create-post', auth, async (req, res) => {
   try {
     let post = {
@@ -110,7 +105,6 @@ router.post('/create-post', auth, async (req, res) => {
 });
 
 //Edit a post by postId
-//VERIFIED WORKING
 router.put('/edit-post', auth, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
@@ -138,7 +132,6 @@ router.put('/edit-post', auth, async (req, res) => {
 });
 
 //Like (or undo like) a post by postId
-//VERIFIED WORKING
 router.put('/like-post', auth, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
@@ -161,7 +154,6 @@ router.put('/like-post', auth, async (req, res) => {
 });
 
 //Delete a post by postId
-//VERIFIED WORKING
 router.delete('/delete-post', auth, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
@@ -180,7 +172,6 @@ router.delete('/delete-post', auth, async (req, res) => {
 });
 
 //Get all friends' and user's posts, sorted chronologically
-//VERIFIED WORKING
 router.get('/posts', auth, async (req, res) => {
   try {
   const friends = await User.find( { friends: req.user.username }, { _id: 0, posts: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' posts: ${err}`);} );
@@ -204,7 +195,6 @@ router.get('/posts', auth, async (req, res) => {
 });
 
 //Get profile information of all friends
-//VERIFIED WORKING
 router.get('/all-friends-profiles', auth, async (req, res) => {
   try {
   const friends = await User.find( { friends: req.user.username }, { password: 0, posts: 0, incomingFriendRequests: 0, outgoingFriendRequests: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' profile information: ${err}`);} );
@@ -219,8 +209,7 @@ router.get('/all-friends-profiles', auth, async (req, res) => {
   }
 });
 
-//Request a new friend by either username or email address and respond with updated outgoing friend requests
-//VERIFIED WORKING
+//Request a new friend by either username or email address
 router.put('/request-friend', auth, async (req, res) => {
   try {
     let possibleFriend = await User.findOne({ $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] });
@@ -259,38 +248,53 @@ router.put('/request-friend', auth, async (req, res) => {
         {new: true});
       requestedFriend.save();
       user.save();
-      return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+      return res.send({ status: `Friend request successfully sent to user ${requestedFriend.username}.`, outgoingFriendRequests: user.outgoingFriendRequests });
     }
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
-//Cancel pending outgoing friend request and respond with updated outgoing friend requests
-//VERIFIED WORKING
+//Cancel pending outgoing friend request
 router.put('/cancel-friend-request', auth, async (req, res) => {
   try {
-    let unRequestedFriend = await User.findOneAndUpdate(
-      { username: req.body.username },
-      {
-        $pullAll: { incomingFriendRequests: [req.user.username] }
-      });
-    if (unRequestedFriend) unRequestedFriend.save();
-    let user = await User.findByIdAndUpdate(req.user._id,
-      {
-        $pullAll: { outgoingFriendRequests: [req.body.username] }
-      },
-      {new: true});
-    user.save();
-    return res.send({ outgoingFriendRequests: user.outgoingFriendRequests });
+    let possibleUnRequestedFriend = await User.findOne({ username: req.body.username });
 
+    if (!possibleUnRequestedFriend) {
+      const user = await User.findByIdAndUpdate(req.user._id,
+        {
+          $pullAll: { outgoingFriendRequests: [req.body.username] },
+          $pullAll: { incomingFriendRequests: [req.body.username] },
+          $pullAll: { friends: [req.body.username] }
+        },
+        {new: true});
+      user.save();
+      return res.status(404).send('There is no registered user with that username.\nNote: Registered Squawk usernames are case-sensitive.');
+    }
+    else if (possibleUnRequestedFriend.username == req.user.username) return res.status(403).send(`You can't request yourself as a friend, so you can't cancel a request of yourself!`);
+    else if (possibleUnRequestedFriend.friends.includes(req.user.username)) return res.status(403).send(`${possibleUnRequestedFriend.username} is already your friend, so you can't cancel a friend request made to ${possibleUnRequestedFriend.username}.`);
+    else if (!possibleUnRequestedFriend.incomingFriendRequests.includes(req.user.username)) return res.status(403).send(`You can't cancel a request that doesn't exist.\nThere does not exist a request from you to add ${possibleUnRequestedFriend.username} as a friend.`);
+    else if (possibleUnRequestedFriend.outgoingFriendRequests.includes(req.user.username)) return res.status(403).send(`${possibleUnRequestedFriend.username} has already sent you a friend request. Try declining that instead.`);
+    else {
+      const unRequestedFriend = await User.findByIdAndUpdate(possibleUnRequestedFriend._id,
+        {
+          $pullAll: { incomingFriendRequests: [req.user.username] }
+        });
+      const user = await User.findByIdAndUpdate(req.user._id,
+        {
+          $pullAll: { outgoingFriendRequests: [req.body.username] }
+        },
+        {new: true});
+      unRequestedFriend.save();
+      user.save();
+      return res.send({ status: `Friend request to user ${unRequestedFriend.username} cancelled successfully.`, outgoingFriendRequests: user.outgoingFriendRequests });
+    }
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
-//Accept incoming friend request and respond with updated incoming friend requests and updated friends
-//VERIFIED WORKING
+//Accept incoming friend request
 router.put('/accept-friend-request', auth, async (req, res) => {
   try {
     let newFriend = await User.findOneAndUpdate(
@@ -316,8 +320,7 @@ router.put('/accept-friend-request', auth, async (req, res) => {
   }
 });
 
-//Decline incoming friend request and respond with updated incoming friend requests
-//VERIFIED WORKING
+//Decline incoming friend request
 router.put('/decline-friend-request', auth, async (req, res) => {
   try {
     let notFriend = await User.findOneAndUpdate(
@@ -340,8 +343,7 @@ router.put('/decline-friend-request', auth, async (req, res) => {
   }
 });
 
-//Remove friend and respond with updated friends
-//VERIFIED WORKING
+//Remove friend
 router.put('/remove-friend', auth, async (req, res) => {
   try {
     let exFriend = await User.findOneAndUpdate(
