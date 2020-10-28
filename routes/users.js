@@ -198,7 +198,7 @@ router.get('/posts', auth, async (req, res) => {
     }
   }
   for (let i = 0; i < user.posts.length; i++){ postsToDisplay.push(user.posts[i]); }
-  postsToDisplay.sort((a, b) => a.postTime - b.postTime);
+  postsToDisplay.sort((a, b) => b.postTime - a.postTime);
   
   return res.send( { postsToDisplay: postsToDisplay } );
 
