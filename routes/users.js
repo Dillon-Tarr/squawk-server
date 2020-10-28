@@ -137,23 +137,19 @@ router.put('/edit-post', auth, async (req, res) => {
   }
 });
 
-//Like (or undo like) a post by author and postId
+//Like (or undo like) a post by postId
 //VERIFIED WORKING
 router.put('/like-post', auth, async (req, res) => {
   try {
-    if (!req.body.author) return res.status(400).send('author must be supplied in the request body.');
-    if (typeof req.body.author !== "string") return res.status(400).send('The value of author must be a string.');
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
     if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
 
-    const author = await User.findOne( { username: req.body.author } );
+    const author = await User.findOne( { "posts._id": req.body.postId }, function(err, results){ if (err) return res.status(404).send(`The post with _id ${req.body.postId} does not exist. Following is the error from MongoDB:\n${err}`);} );
     const postIndex = author.posts.findIndex((post) => post._id == req.body.postId);
-    if (postIndex === -1) return res.status(400).send(`User "${req.body.author}" has no post with _id "${req.body.postId}".`);
-
-    const indexOfUser = author.posts[postIndex].likes.indexOf(req.user.username);
-    if (indexOfUser === -1) author.posts[postIndex].likes.push(req.user.username);
+    const userIndex = author.posts[postIndex].likes.indexOf(req.user.username);
+    if (userIndex === -1) author.posts[postIndex].likes.push(req.user.username);
     else {
-      author.posts[postIndex].likes.splice(indexOfUser, 1);
+      author.posts[postIndex].likes.splice(userIndex, 1);
     }
     
     author.save();
