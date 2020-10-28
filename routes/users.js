@@ -67,7 +67,7 @@ router.post('/log-out', auth, async (req, res) => {
 router.get('/user-profile', auth, async (req, res) => {
   try {
   const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);});
-  return res.send( { userProfile: userProfile } );
+  return res.send( userProfile );
 
   } catch (ex) {
   return res.status(500).send(`Internal Server Error: ${ex}`);
