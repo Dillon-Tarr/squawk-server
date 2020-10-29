@@ -302,7 +302,7 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
         },
         {new: true});
       user.save();
-      return res.status(403).send(`${possibleUnRequestedFriend.username} is already your friend!`);
+      return res.status(403).send(`${req.body.username} is already your friend!`);
     }
     else if (noRequestToCancel) {
       const user = await User.findByIdAndUpdate(req.user._id,
@@ -311,9 +311,9 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
         },
         {new: true});
       user.save();
-      return res.status(404).send(`You can't cancel a request that doesn't exist.\nThere does not exist a request from you to add ${possibleUnRequestedFriend.username} as a friend.`);
+      return res.status(404).send(`You can't cancel a request that doesn't exist.\nThere does not exist a request from you to add ${req.body.username} as a friend.`);
     }
-    else if (shouldDeclineInstead) return res.status(403).send(`${possibleUnRequestedFriend.username} has already sent you a friend request. Try declining the incoming request instead.`);
+    else if (shouldDeclineInstead) return res.status(403).send(`${req.body.username} has already sent you a friend request. Try declining the incoming request instead.`);
     else {
       const unRequestedFriend = await User.findByIdAndUpdate(possibleUnRequestedFriend._id,
         {
@@ -326,7 +326,7 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
         {new: true});
       unRequestedFriend.save();
       user.save();
-      return res.send({ status: `Friend request to user ${unRequestedFriend.username} cancelled successfully.`, outgoingFriendRequests: user.outgoingFriendRequests });
+      return res.send({ status: `Friend request to user ${req.body.username} cancelled successfully.`, outgoingFriendRequests: user.outgoingFriendRequests });
     }
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -363,8 +363,8 @@ router.put('/accept-friend-request', auth, async (req, res) => {
         },
         {new: true});
       user.save();
-      if (alreadyFriends) return res.status(403).send(`${possibleNewFriend.username} is already your friend! :D`);
-      return res.status(403).send(`You can't accept a request that doesn't exist.\nThere does not exist a request from ${possibleNewFriend.username} to add you as a friend.\n${possibleNewFriend.username} may have cancelled the request.`);
+      if (alreadyFriends) return res.status(403).send(`${req.body.username} is already your friend! :D`);
+      return res.status(403).send(`You can't accept a request that doesn't exist.\nThere does not exist a request from ${req.body.username} to add you as a friend.\n${req.body.username} may have cancelled the request.`);
     }
     else {
       const newFriend = await User.findByIdAndUpdate(possibleFriend._id,
@@ -382,7 +382,7 @@ router.put('/accept-friend-request', auth, async (req, res) => {
         {new: true});
       newFriend.save();
       user.save();
-      return res.send({ status: `Friend request from ${newFriend.username} accepted successfully. You and ${newFriend.username} are now friends!`, incomingFriendRequests: user.incomingFriendRequests, friends: user.friends });
+      return res.send({ status: `Friend request from ${req.body.username} accepted successfully. You and ${req.body.username} are now friends!`, incomingFriendRequests: user.incomingFriendRequests, friends: user.friends });
     }
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -392,19 +392,20 @@ router.put('/accept-friend-request', auth, async (req, res) => {
 //Decline incoming friend request
 router.put('/decline-friend-request', auth, async (req, res) => {
   try {
-    let notFriend = await User.findOneAndUpdate(
+    if (req.body.username == req.user.username) return res.status(403).send(`You can't request yourself as a friend, so you can't decline a request from yourself!`);
+    const notFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
         $pullAll: { outgoingFriendRequests: [req.user.username] }
       });
-    let user = await User.findByIdAndUpdate(req.user._id,
+    const user = await User.findByIdAndUpdate(req.user._id,
       {
         $pullAll: { incomingFriendRequests: [req.body.username] }
       },
       {new: true});
     if (notFriend) notFriend.save();
     user.save();
-
+    if (notFriend.friends.includes(req.user.username)) return res.send(`${req.body.username} is in your friends list. Use the remove option if you want to change that.`);
     return res.send({ incomingFriendRequests: user.incomingFriendRequests });
 
   } catch (ex) {
@@ -415,13 +416,18 @@ router.put('/decline-friend-request', auth, async (req, res) => {
 //Remove friend
 router.put('/remove-friend', auth, async (req, res) => {
   try {
-    let exFriend = await User.findOneAndUpdate(
+    if (req.body.username == req.user.username) return res.status(403).send(`You can't make it onto your own friends list, so you can't remove yourself from it either.`);
+    const exFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
+        $pullAll: { outgoingFriendRequests: [req.user.username] },
+        $pullAll: { incomingFriendRequests: [req.user.username] },
         $pullAll: { friends: [req.user.username] }
       });
-    let user = await User.findByIdAndUpdate(req.user._id,
+    const user = await User.findByIdAndUpdate(req.user._id,
       {
+        $pullAll: { outgoingFriendRequests: [req.body.username] },
+        $pullAll: { incomingFriendRequests: [req.body.username] },
         $pullAll: { friends: [req.body.username] }
       },
       {new: true});
