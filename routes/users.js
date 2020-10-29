@@ -55,6 +55,13 @@ router.post('/log-out', auth, async (req, res) => {
         isOnline: false
       });
     user.save();
+
+    const oldToken = req.header('x-auth-token');
+    const blacklistedToken = new BlacklistedToken({
+      string: oldToken
+    });
+    await blacklistedToken.save();
+    
     return res.send( `User "${user.username}" logged out successfully.` );
 
   } catch (ex) {
@@ -77,7 +84,46 @@ router.get('/user-profile', auth, checkTokenBlacklist, async (req, res) => {
 router.delete('/delete-account', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user._id);
-    if (deletedUser) return res.send( `User "${deletedUser.username}" deleted successfully.` );
+    if (!deletedUser) return res.send( `User "${deletedUser.username}" not found.` );
+
+    const currentFriends = await User.find( { friends: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}'s username: ${err}`);} );
+    if (currentFriends) {
+      for (let i = 0; i < currentFriends.length; i++){
+        const friend = await User.findByIdAndUpdate(currentFriends[i]._id,
+          {
+            $pullAll: { friends: [req.user.username] },
+          });
+        friend.save();
+      }
+    }
+    const wannabeFriends = await User.find( { outgoingFriendRequests: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}: ${err}`);} );
+    if (wannabeFriends) {
+      for (let i = 0; i < wannabeFriends.length; i++){
+        const wannabeFriend = await User.findByIdAndUpdate(wannabeFriends[i]._id,
+          {
+            $pullAll: { outgoingFriendRequests: [req.user.username] },
+          });
+        wannabeFriend.save();
+      }
+    }
+    const friendMeMaybes = await User.find( { incomingFriendRequests: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}: ${err}`);} );
+    if (friendMeMaybes) {
+      for (let i = 0; i < friendMeMaybes.length; i++){
+        const friendMeMaybe = await User.findByIdAndUpdate(friendMeMaybes[i]._id,
+          {
+            $pullAll: { incomingFriendRequests: [req.user.username] },
+          });
+        friendMeMaybe.save();
+      }
+    }
+  
+    const oldToken = req.header('x-auth-token');
+    const blacklistedToken = new BlacklistedToken({
+      string: oldToken
+    });
+    await blacklistedToken.save();
+    
+    return res.send( `User "${deletedUser.username}" deleted successfully.` );
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
