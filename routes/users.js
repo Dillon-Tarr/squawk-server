@@ -459,14 +459,15 @@ router.get('/online-friends', auth, async (req, res) => {
 //Update username
 router.put('/update-username', auth, async (req, res) => {
   try {
-  let usernameTaken = await User.findOne({ username: req.body.username });
+  const usernameTaken = await User.findOne({ username: req.body.username });
   if (usernameTaken) return res.status(400).send('Someone is already registered with that username.');
   
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { username: req.body.username },
     { new: true }
     );
-
+  user.save();
+  
   return res.send({ username: user.username });
 
   } catch (ex) {
@@ -478,10 +479,11 @@ router.put('/update-username', auth, async (req, res) => {
 router.put('/update-password', auth, async (req, res) => {
   try {
   const salt = await bcrypt.genSalt(10);
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { password: await bcrypt.hash(req.body.password, salt) },
     { new: true }
     );
+  user.save();
 
   return res.send( `User "${user.username}" password updated successfully.` );
 
@@ -493,13 +495,14 @@ router.put('/update-password', auth, async (req, res) => {
 //Update emailAddress
 router.put('/update-email-address', auth, async (req, res) => {
   try {
-  let emailAddressTaken = await User.findOne({ emailAddress: req.body.emailAddress });
+  const emailAddressTaken = await User.findOne({ emailAddress: req.body.emailAddress });
   if (emailAddressTaken) return res.status(400).send('Someone is already registered with that email address.');
 
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { emailAddress: req.body.emailAddress },
     { new: true }
     );
+  user.save();
 
   return res.send({ emailAddress: user.emailAddress });
 
@@ -511,10 +514,11 @@ router.put('/update-email-address', auth, async (req, res) => {
 //Update profilePicture
 router.put('/update-profile-picture', auth, async (req, res) => {
   try {
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { profilePicture: req.body.profilePicture },
     { new: true }
     );
+  user.save();
 
   return res.send({ profilePicture: user.profilePicture });
 
@@ -526,10 +530,11 @@ router.put('/update-profile-picture', auth, async (req, res) => {
 //Update aboutMe
 router.put('/update-about-me', auth, async (req, res) => {
   try {
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { aboutMe: req.body.aboutMe },
     { new: true }
     );
+  user.save();
 
   return res.send({ aboutMe: user.aboutMe });
 
@@ -541,10 +546,11 @@ router.put('/update-about-me', auth, async (req, res) => {
 //Update birdCall
 router.put('/update-bird-call', auth, async (req, res) => {
   try {
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { birdCall: req.body.birdCall },
     { new: true }
     );
+  user.save();
 
   return res.send({ birdCall: user.birdCall });
 
@@ -556,10 +562,11 @@ router.put('/update-bird-call', auth, async (req, res) => {
 //Update myBirds
 router.put('/update-my-birds', auth, async (req, res) => {
   try {
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { myBirds: req.body.myBirds },
     { new: true }
     );
+  user.save();
 
   return res.send({ myBirds: user.myBirds });
 
@@ -571,10 +578,11 @@ router.put('/update-my-birds', auth, async (req, res) => {
 //Update birdsIWatch
 router.put('/update-birds-i-watch', auth, async (req, res) => {
   try {
-  let user = await User.findByIdAndUpdate(req.user._id,
+  const user = await User.findByIdAndUpdate(req.user._id,
     { birdsIWatch: req.body.birdsIWatch },
     { new: true }
     );
+  user.save();
 
   return res.send({ birdsIWatch: user.birdsIWatch });
 
