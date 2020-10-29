@@ -1,7 +1,9 @@
 const { User, validateUser } = require('../models/user');
+const { BlacklistedToken } = require('../models/blacklistedToken');
 
 const bcrypt = require('bcrypt');
 const auth = require('../middleware/auth');
+const checkTokenBlacklist = require('../middleware/checkTokenBlacklist');
 const express = require('express');
 const router = express.Router();
 
@@ -61,7 +63,7 @@ router.post('/log-out', auth, async (req, res) => {
 });
 
 //Get signed-in user's profile
-router.get('/user-profile', auth, async (req, res) => {
+router.get('/user-profile', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const userProfile = await User.findById( req.user._id, { password: 0, posts: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find the user's profile information: ${err}`);} );
   return res.send( userProfile ); //never change this line again
@@ -72,7 +74,7 @@ router.get('/user-profile', auth, async (req, res) => {
 });
 
 //Delete user account (after making very sure the user wants to permanently delete the account)
-router.delete('/delete-account', auth, async (req, res) => {
+router.delete('/delete-account', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user._id);
     if (deletedUser) return res.send( `User "${deletedUser.username}" deleted successfully.` );
@@ -83,7 +85,7 @@ router.delete('/delete-account', auth, async (req, res) => {
 });
 
 //Create a new post
-router.post('/create-post', auth, async (req, res) => {
+router.post('/create-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const post = {
       author: req.user.username,
@@ -105,7 +107,7 @@ router.post('/create-post', auth, async (req, res) => {
 });
 
 //Edit a post by postId
-router.put('/edit-post', auth, async (req, res) => {
+router.put('/edit-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
     if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
@@ -132,7 +134,7 @@ router.put('/edit-post', auth, async (req, res) => {
 });
 
 //Like (or undo like) a post by postId
-router.put('/like-post', auth, async (req, res) => {
+router.put('/like-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
     if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
@@ -154,7 +156,7 @@ router.put('/like-post', auth, async (req, res) => {
 });
 
 //Delete a post by postId
-router.delete('/delete-post', auth, async (req, res) => {
+router.delete('/delete-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
     if (!req.body.postId) return res.status(400).send('postId must be supplied in the request body.');
     if (typeof req.body.postId !== "string") return res.status(400).send('The value of postId must be a string.');
@@ -172,7 +174,7 @@ router.delete('/delete-post', auth, async (req, res) => {
 });
 
 //Get all friends' and user's posts, sorted chronologically
-router.get('/posts', auth, async (req, res) => {
+router.get('/posts', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const friends = await User.find( { friends: req.user.username }, { _id: 0, posts: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' posts: ${err}`);} );
   if (!friends) return res.send(`The user does not yet have friends from whom to get posts.`);
@@ -195,7 +197,7 @@ router.get('/posts', auth, async (req, res) => {
 });
 
 //Get profile information of all friends
-router.get('/all-friends-profiles', auth, async (req, res) => {
+router.get('/all-friends-profiles', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const friends = await User.find( { friends: req.user.username }, { password: 0, posts: 0, incomingFriendRequests: 0, outgoingFriendRequests: 0, _id: 0, __v: 0 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to find friends' profile information: ${err}`);} );
   if (!friends) return res.send(`The user does not yet have friends from whom to get profile information.`);
@@ -210,7 +212,7 @@ router.get('/all-friends-profiles', auth, async (req, res) => {
 });
 
 //Request a new friend by either username or email address
-router.put('/request-friend', auth, async (req, res) => {
+router.put('/request-friend', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const possibleFriend = await User.findOne({ $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] });
 
@@ -272,7 +274,7 @@ router.put('/request-friend', auth, async (req, res) => {
 });
 
 //Cancel pending outgoing friend request
-router.put('/cancel-friend-request', auth, async (req, res) => {
+router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const possibleUnRequestedFriend = await User.findOne({ username: req.body.username });
 
@@ -334,7 +336,7 @@ router.put('/cancel-friend-request', auth, async (req, res) => {
 });
 
 //Accept incoming friend request
-router.put('/accept-friend-request', auth, async (req, res) => {
+router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
     const possibleNewFriend = await User.findOne({ username: req.body.username });
 
@@ -390,7 +392,7 @@ router.put('/accept-friend-request', auth, async (req, res) => {
 });
 
 //Decline incoming friend request
-router.put('/decline-friend-request', auth, async (req, res) => {
+router.put('/decline-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
     if (req.body.username == req.user.username) return res.status(403).send(`You can't request yourself as a friend, so you can't decline a request from yourself!`);
     const notFriend = await User.findOneAndUpdate(
@@ -414,7 +416,7 @@ router.put('/decline-friend-request', auth, async (req, res) => {
 });
 
 //Remove friend
-router.put('/remove-friend', auth, async (req, res) => {
+router.put('/remove-friend', auth, checkTokenBlacklist, async (req, res) => {
   try {
     if (req.body.username == req.user.username) return res.status(403).send(`You can't make it onto your own friends list, so you can't remove yourself from it either.`);
     const exFriend = await User.findOneAndUpdate(
@@ -442,7 +444,7 @@ router.put('/remove-friend', auth, async (req, res) => {
 });
 
 //Get the online status of all friends
-router.get('/online-friends', auth, async (req, res) => {
+router.get('/online-friends', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findById(req.user._id);
   const friends = user.friends;
@@ -463,7 +465,7 @@ router.get('/online-friends', auth, async (req, res) => {
 });
 
 //Update username
-router.put('/update-username', auth, async (req, res) => {
+router.put('/update-username', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const usernameTaken = await User.findOne({ username: req.body.username });
   if (usernameTaken) return res.status(400).send('Someone is already registered with that username.');
@@ -529,12 +531,18 @@ router.put('/update-username', auth, async (req, res) => {
     }
   }
 
-  const token = user.generateAuthToken();
+  const oldToken = req.header('x-auth-token');
+  const blacklistedToken = new BlacklistedToken({
+    string: oldToken
+  });
+  await blacklistedToken.save();
+
+  const newToken = user.generateAuthToken();
   
   return res
-    .header('x-auth-token', token)
+    .header('x-auth-token', newToken)
     .header('access-control-expose-headers', 'x-auth-token')
-    .send({ status: `Username updated successfully. NOTE: You must must replace the existing JWT with new token from the x-auth-token header of this response.\nIf you do not do this, future requests will be sent with the wrong username!`, newUsername: user.username });
+    .send({ status: `Username updated successfully. NOTE: You must must replace the existing JWT with the new token from the x-auth-token header of this response. The token used to place this request will not be accepted again, except to log out.`, newUsername: user.username });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -542,7 +550,7 @@ router.put('/update-username', auth, async (req, res) => {
 });
 
 //Update password
-router.put('/update-password', auth, async (req, res) => {
+router.put('/update-password', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const salt = await bcrypt.genSalt(10);
   const user = await User.findByIdAndUpdate(req.user._id,
@@ -559,7 +567,7 @@ router.put('/update-password', auth, async (req, res) => {
 });
 
 //Update emailAddress
-router.put('/update-email-address', auth, async (req, res) => {
+router.put('/update-email-address', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const emailAddressTaken = await User.findOne({ emailAddress: req.body.emailAddress });
   if (emailAddressTaken) return res.status(400).send('Someone is already registered with that email address.');
@@ -578,7 +586,7 @@ router.put('/update-email-address', auth, async (req, res) => {
 });
 
 //Update profilePicture
-router.put('/update-profile-picture', auth, async (req, res) => {
+router.put('/update-profile-picture', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { profilePicture: req.body.profilePicture },
@@ -594,7 +602,7 @@ router.put('/update-profile-picture', auth, async (req, res) => {
 });
 
 //Update aboutMe
-router.put('/update-about-me', auth, async (req, res) => {
+router.put('/update-about-me', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { aboutMe: req.body.aboutMe },
@@ -610,7 +618,7 @@ router.put('/update-about-me', auth, async (req, res) => {
 });
 
 //Update birdCall
-router.put('/update-bird-call', auth, async (req, res) => {
+router.put('/update-bird-call', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { birdCall: req.body.birdCall },
@@ -626,7 +634,7 @@ router.put('/update-bird-call', auth, async (req, res) => {
 });
 
 //Update myBirds
-router.put('/update-my-birds', auth, async (req, res) => {
+router.put('/update-my-birds', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { myBirds: req.body.myBirds },
@@ -642,7 +650,7 @@ router.put('/update-my-birds', auth, async (req, res) => {
 });
 
 //Update birdsIWatch
-router.put('/update-birds-i-watch', auth, async (req, res) => {
+router.put('/update-birds-i-watch', auth, checkTokenBlacklist, async (req, res) => {
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { birdsIWatch: req.body.birdsIWatch },

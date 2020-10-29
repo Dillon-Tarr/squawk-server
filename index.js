@@ -3,8 +3,9 @@ const cors = require('cors');
 const connectDB = require('./startup/db');
 const app = express();
 const users = require('./routes/users');
+const blacklistedTokens = require('./routes/blacklistedTokens');
 const auth = require('./routes/auth');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 connectDB();
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json({limit: '5mb'}));
 app.use(express.json({limit: '5mb'}));
 app.use(cors());
 app.use('/api/users', users);
+app.use('/api/blacklisted-tokens', blacklistedTokens);
 app.use('/api/auth', auth);
 
 
