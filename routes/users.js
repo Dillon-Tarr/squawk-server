@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 //Log out
 router.post('/log-out', auth, async (req, res) => {
   try {
-    let user = await User.findByIdAndUpdate(req.user._id,
+    const user = await User.findByIdAndUpdate(req.user._id,
       {
         isOnline: false
       });
@@ -85,13 +85,13 @@ router.delete('/delete-account', auth, async (req, res) => {
 //Create a new post
 router.post('/create-post', auth, async (req, res) => {
   try {
-    let post = {
+    const post = {
       author: req.user.username,
       text: req.body.text,
       imageString: req.body.imageString,
       likes: []
     }
-    let user = await User.findByIdAndUpdate(req.user._id,
+    const user = await User.findByIdAndUpdate(req.user._id,
       {
         $push: { posts: post }
       },
@@ -449,7 +449,7 @@ router.get('/online-friends', auth, async (req, res) => {
   if (friends === []) return res.send(`The user does not yet have friends from whom to get online statuses.`);
   let friendsAndOnlineStatuses = [];
   for(let i = 0; i < friends.length; i++){
-    let friend = User.findOne({ username: friends[i].username });
+    const friend = User.findOne({ username: friends[i].username });
     friendsAndOnlineStatuses.push({
       username: friend.username,
       isOnline: friend.isOnline
@@ -472,9 +472,69 @@ router.put('/update-username', auth, async (req, res) => {
     { username: req.body.username },
     { new: true }
     );
+  for (let i = 0; i < user.posts.length; i++){
+    user.posts[i].author = req.body.username;
+  }
   user.save();
   
-  return res.send({ username: user.username });
+  const currentFriends = await User.find( { friends: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}'s username: ${err}`);} );
+  if (currentFriends) {
+    for (let i = 0; i < currentFriends.length; i++){
+      const friend = await User.findByIdAndUpdate(currentFriends[i]._id,
+        {
+          $pullAll: { friends: [req.user.username] },
+        });
+      friend.save();
+    }
+    for (let i = 0; i < currentFriends.length; i++){
+      const friend = await User.findByIdAndUpdate(currentFriends[i]._id,
+        {
+          $push: { friends: req.body.username }
+        });
+      friend.save();
+    }
+  }
+  const wannabeFriends = await User.find( { outgoingFriendRequests: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}: ${err}`);} );
+  if (wannabeFriends) {
+    for (let i = 0; i < wannabeFriends.length; i++){
+      const wannabeFriend = await User.findByIdAndUpdate(wannabeFriends[i]._id,
+        {
+          $pullAll: { outgoingFriendRequests: [req.user.username] },
+        });
+      wannabeFriend.save();
+    }
+    for (let i = 0; i < wannabeFriends.length; i++){
+      const wannabeFriend = await User.findByIdAndUpdate(wannabeFriends[i]._id,
+        {
+          $push: { outgoingFriendRequests: req.body.username }
+        });
+      wannabeFriend.save();
+    }
+  }
+  const friendMeMaybes = await User.find( { incomingFriendRequests: req.user.username }, { _id: 1 }, function(err, results){ if (err) return res.status(404).send(`The following error occurred when trying to update ${req.user.username}: ${err}`);} );
+  if (friendMeMaybes) {
+    for (let i = 0; i < friendMeMaybes.length; i++){
+      const friendMeMaybe = await User.findByIdAndUpdate(friendMeMaybes[i]._id,
+        {
+          $pullAll: { incomingFriendRequests: [req.user.username] },
+        });
+      friendMeMaybe.save();
+    }
+    for (let i = 0; i < friendMeMaybes.length; i++){
+      const friendMeMaybe = await User.findByIdAndUpdate(friendMeMaybes[i]._id,
+        {
+          $push: { incomingFriendRequests: req.body.username }
+        });
+      friendMeMaybe.save();
+    }
+  }
+
+  const token = user.generateAuthToken();
+  
+  return res
+    .header('x-auth-token', token)
+    .header('access-control-expose-headers', 'x-auth-token')
+    .send({ status: `Username updated successfully. NOTE: You must must replace the existing JWT with new token from the x-auth-token header of this response.\nIf you do not do this, future requests will be sent with the wrong username!`, newUsername: user.username });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
