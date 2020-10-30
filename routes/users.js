@@ -61,7 +61,7 @@ router.post('/log-out', auth, async (req, res) => {
       string: oldToken
     });
     await blacklistedToken.save();
-    
+
     return res.send( `User "${user.username}" logged out successfully.` );
 
   } catch (ex) {
@@ -682,13 +682,28 @@ router.put('/update-bird-call', auth, checkTokenBlacklist, async (req, res) => {
 //Update myBirds
 router.put('/update-my-birds', auth, checkTokenBlacklist, async (req, res) => {
   try {
-  const user = await User.findByIdAndUpdate(req.user._id,
-    { myBirds: req.body.myBirds },
-    { new: true }
-    );
-  user.save();
+    let status;
+    let user;
+    if (req.body.newBird && req.body.oldBird) return res.status(400).send('You must send either a newBird (to add) or an oldBird (to remove) in the body if your request.\nDo not send both.');
+    else if (req.body.newBird){
+      user = await User.findByIdAndUpdate(req.user._id,
+        { $push: { myBirds: req.body.newBird } },
+        { new: true }
+        );
+      user.save();
+      status = `Successfully added ${req.body.newBird} to myBirds.`;
+    }
+    else if (req.body.oldBird){
+      user = await User.findByIdAndUpdate(req.user._id,
+        { $pullAll: { myBirds: [req.body.oldBird] } },
+        { new: true }
+        );
+      user.save();
+      status = `${req.body.oldBird} is no longer in myBirds.`;
+    }
+    else return res.status(400).send('You must send either a newBird (to add) or an oldBird (to remove) in the body if your request.');
 
-  return res.send({ myBirds: user.myBirds });
+    return res.send({ status: status, myBirds: user.myBirds });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -698,13 +713,28 @@ router.put('/update-my-birds', auth, checkTokenBlacklist, async (req, res) => {
 //Update birdsIWatch
 router.put('/update-birds-i-watch', auth, checkTokenBlacklist, async (req, res) => {
   try {
-  const user = await User.findByIdAndUpdate(req.user._id,
-    { birdsIWatch: req.body.birdsIWatch },
-    { new: true }
-    );
-  user.save();
+    let status;
+    let user;
+    if (req.body.newBird && req.body.oldBird) return res.status(400).send('You must send either a newBird (to add) or an oldBird (to remove) in the body if your request.\nDo not send both.');
+    else if (req.body.newBird){
+      user = await User.findByIdAndUpdate(req.user._id,
+        { $push: { birdsIWatch: req.body.newBird } },
+        { new: true }
+        );
+      user.save();
+      status = `Successfully added ${req.body.newBird} to birdsIWatch.`;
+    }
+    else if (req.body.oldBird){
+      user = await User.findByIdAndUpdate(req.user._id,
+        { $pullAll: { birdsIWatch: [req.body.oldBird] } },
+        { new: true }
+        );
+      user.save();
+      status = `${req.body.oldBird} is no longer in birdsIWatch.`;
+    }
+    else return res.status(400).send('You must send either a newBird (to add) or an oldBird (to remove) in the body if your request.');
 
-  return res.send({ birdsIWatch: user.birdsIWatch });
+    return res.send({ status: status, birdsIWatch: user.birdsIWatch });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);

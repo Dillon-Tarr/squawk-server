@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"username\": \"YOITWORKSNOW!\",\r\n  \"password\": \"password\",\r\n  \"emailAddress\": \"WOohoooOOO@gmail.com\",\r\n  \"isOnline\": true,\r\n  \"profilePicture\": \"\",\r\n  \"aboutMe\": \"\",\r\n  \"birdCall\": \"\",\r\n  \"myBirds\": [],\r\n  \"birdsIWatch\": [],\r\n  \"friends\": [],\r\n  \"posts\": []\r\n  }",
+					"raw": "{\r\n  \"username\": \"required\",\r\n  \"password\": \"required\",\r\n  \"emailAddress\": \"required\",\r\n  \"isOnline\": true,\r\n  \"profilePicture\": \"\",\r\n  \"aboutMe\": \"\",\r\n  \"birdCall\": \"\",\r\n  \"myBirds\": [],\r\n  \"birdsIWatch\": [],\r\n  \"friends\": [],\r\n  \"posts\": []\r\n  }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -41,7 +41,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"usernameOrEmailAddress\": \"DillyDill\",\r\n  \"password\": \"password\"\r\n  }",
+					"raw": "{\r\n  \"usernameOrEmailAddress\": \"usernameOrEmailAddress\",\r\n  \"password\": \"password\"\r\n  }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -71,7 +71,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzMDQ0OX0.HloKiYjFUvmZIWFMa0SNZKri_9540m8aySlKlNzGxu0"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
@@ -100,6 +100,36 @@
 			"response": []
 		},
 		{
+			"name": "Remove old blacklisted tokens",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/blacklisted-tokens/old-tokens",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blacklisted-tokens",
+						"old-tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get user profile",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -109,7 +139,7 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs",
+						"value": "token-goes-here",
 						"type": "text"
 					}
 				],
@@ -134,45 +164,6 @@
 			"response": []
 		},
 		{
-			"name": "Get posts from friends and self",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/api/users/posts",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api",
-						"users",
-						"posts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Get friends' profiles",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -182,7 +173,7 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs",
+						"value": "token-goes-here",
 						"type": "text"
 					}
 				],
@@ -212,6 +203,45 @@
 			"response": []
 		},
 		{
+			"name": "Get posts from friends and self",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "token-goes-here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create post",
 			"request": {
 				"method": "POST",
@@ -219,7 +249,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
@@ -255,7 +285,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
@@ -291,7 +321,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
@@ -327,7 +357,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
@@ -362,13 +392,13 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzc1MjYzNH0.scdYE1amvTXV2m6SBvS0kVdNIvvWcfBRx8ayoFRwExU",
+						"value": "token-goes-here",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"usernameOrEmailAddress\": \"Danimal\"\r\n}",
+					"raw": "{\r\n    \"usernameOrEmailAddress\": \"requestedFriend\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -399,12 +429,12 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"\"\r\n}",
+					"raw": "{\r\n    \"username\": \"unRequestedFriend\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -434,19 +464,13 @@
 				"header": [
 					{
 						"key": "x-auth-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs",
+						"value": "token-goes-here",
 						"type": "text"
-					},
-					{
-						"key": "",
-						"value": "",
-						"type": "text",
-						"disabled": true
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"Danimal\"\r\n}",
+					"raw": "{\r\n    \"username\": \"newFriend\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -477,12 +501,12 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"DillyDill\"\r\n}",
+					"raw": "{\r\n    \"username\": \"notFriend\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -513,12 +537,12 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk1ZTQ4MjUwYjhkNTFiNDQxOTU0ZmUiLCJ1c2VybmFtZSI6IkRpbGx5RGlsbCIsImlhdCI6MTYwMzgzODE2Nn0.231Ge92DGRaYN1Ili2UabtFp2ZtvOlQQ_dibAYUDGxs"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"DillyDill\"\r\n}",
+					"raw": "{\r\n    \"username\": \"exFriend\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -542,6 +566,294 @@
 			"response": []
 		},
 		{
+			"name": "Update username",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"newUsername\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-username",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-username"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update password",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"newPassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-password",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update email address",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"emailAddress\": \"new@email.address\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-email-address",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-email-address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update profile picture",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"profilepicture\": \"newProfilePictureString\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-profile-picture",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-profile-picture"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update about me",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"aboutMe\": \"newAboutMe\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-about-me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-about-me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update bird call",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"birdCall\": \"newBirdCall\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-bird-call",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-bird-call"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update my birds",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"newBird\": \"Barn Owl\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-my-birds",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-my-birds"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update birds I watch",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"oldBird\": \"Gull\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/update-birds-i-watch",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"update-birds-i-watch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete account",
 			"request": {
 				"method": "DELETE",
@@ -549,7 +861,7 @@
 					{
 						"key": "x-auth-token",
 						"type": "text",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Zjk2MDExZmI3NDVkNjI2Yjg3OTQ4NDMiLCJ1c2VybmFtZSI6IkZyaWVuZE9mRGlsbCIsImlhdCI6MTYwMzY2NzYzOH0.hp4OAdcY5sWHL94VcBwLaHjNqGB-c6w2EHXaSqlnkGA"
+						"value": "token-goes-here"
 					}
 				],
 				"body": {
