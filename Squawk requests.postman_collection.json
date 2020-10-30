@@ -203,6 +203,45 @@
 			"response": []
 		},
 		{
+			"name": "Get friends and online statuses",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"type": "text",
+						"value": "token-goes-here"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/users/online-friends",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"online-friends"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get posts from friends and self",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true

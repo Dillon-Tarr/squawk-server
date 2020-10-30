@@ -497,13 +497,13 @@ router.get('/online-friends', auth, checkTokenBlacklist, async (req, res) => {
   if (friends === []) return res.send(`The user does not yet have friends from whom to get online statuses.`);
   let friendsAndOnlineStatuses = [];
   for(let i = 0; i < friends.length; i++){
-    const friend = User.findOne({ username: friends[i].username });
+    const friend = await User.findOne({ username: friends[i] });
     friendsAndOnlineStatuses.push({
       username: friend.username,
       isOnline: friend.isOnline
     });
   }
-  return res.send({ friendsAndOnlineStatuses });
+  return res.send({ friendsAndOnlineStatuses: friendsAndOnlineStatuses });
 
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
