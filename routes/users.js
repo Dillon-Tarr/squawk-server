@@ -415,7 +415,7 @@ router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res)
       return res.status(403).send(`You can't accept a request that doesn't exist.\nThere does not exist a request from ${req.body.username} to add you as a friend.\n${req.body.username} may have cancelled the request.`);
     }
     else {
-      const newFriend = await User.findByIdAndUpdate(possibleFriend._id,
+      const newFriend = await User.findByIdAndUpdate(possibleNewFriend._id,
         {
           $pullAll: { outgoingFriendRequests: [req.user.username] },
           $pullAll: { incomingFriendRequests: [req.user.username] },
