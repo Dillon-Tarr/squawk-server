@@ -133,6 +133,7 @@ router.delete('/delete-account', auth, checkTokenBlacklist, async (req, res) => 
 //Create a new post
 router.post('/create-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!(req.body.author && req.body.text && req.body.imageString)) return res.status(400).send('"author", "text", and "imageString" must be supplied in the request body.');
     const post = {
       author: req.user.username,
       text: req.body.text,
@@ -260,6 +261,7 @@ router.get('/all-friends-profiles', auth, checkTokenBlacklist, async (req, res) 
 //Request a new friend by either username or email address
 router.put('/request-friend', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.usernameOrEmailAddress) return res.status(400).send(`You must include "usernameOrEmailAddress" in the request body.`);
     const possibleFriend = await User.findOne({ $or: [ { username: req.body.usernameOrEmailAddress }, { emailAddress: req.body.usernameOrEmailAddress } ] });
 
     if (!possibleFriend) var noUser = true;
@@ -322,6 +324,7 @@ router.put('/request-friend', auth, checkTokenBlacklist, async (req, res) => {
 //Cancel pending outgoing friend request
 router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.username) return res.status(400).send(`You must include "username" in the request body.`);
     const possibleUnRequestedFriend = await User.findOne({ username: req.body.username });
 
     if (!possibleUnRequestedFriend) var noUser = true;
@@ -384,6 +387,7 @@ router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res)
 //Accept incoming friend request
 router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.username) return res.status(400).send(`You must include "username" in the request body.`);
     const possibleNewFriend = await User.findOne({ username: req.body.username });
 
     if (!possibleNewFriend) var noUser = true;
@@ -440,6 +444,7 @@ router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res)
 //Decline incoming friend request
 router.put('/decline-friend-request', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.username) return res.status(400).send(`You must include "username" in the request body.`);
     if (req.body.username == req.user.username) return res.status(403).send(`You can't request yourself as a friend, so you can't decline a request from yourself!`);
     const notFriend = await User.findOneAndUpdate(
       { username: req.body.username },
@@ -464,6 +469,7 @@ router.put('/decline-friend-request', auth, checkTokenBlacklist, async (req, res
 //Remove friend
 router.put('/remove-friend', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.username) return res.status(400).send(`You must include "username" in the request body.`);
     if (req.body.username == req.user.username) return res.status(403).send(`You can't make it onto your own friends list, so you can't remove yourself from it either.`);
     const exFriend = await User.findOneAndUpdate(
       { username: req.body.username },
@@ -513,6 +519,7 @@ router.get('/online-friends', auth, checkTokenBlacklist, async (req, res) => {
 //Update username
 router.put('/update-username', auth, checkTokenBlacklist, async (req, res) => {
   try {
+  if (!req.body.username) return res.status(400).send(`You must include "username" (the new username) in the request body.`);
   const usernameTaken = await User.findOne({ username: req.body.username });
   if (usernameTaken) return res.status(400).send('Someone is already registered with that username.');
   
@@ -598,6 +605,7 @@ router.put('/update-username', auth, checkTokenBlacklist, async (req, res) => {
 //Update password
 router.put('/update-password', auth, checkTokenBlacklist, async (req, res) => {
   try {
+    if (!req.body.password) return res.status(400).send(`You must include "password" (the new password) in the request body.`);
   const salt = await bcrypt.genSalt(10);
   const user = await User.findByIdAndUpdate(req.user._id,
     { password: await bcrypt.hash(req.body.password, salt) },
@@ -615,6 +623,7 @@ router.put('/update-password', auth, checkTokenBlacklist, async (req, res) => {
 //Update emailAddress
 router.put('/update-email-address', auth, checkTokenBlacklist, async (req, res) => {
   try {
+  if (!req.body.emailAddress) return res.status(400).send(`You must include "emailAddress" (the new email address) in the request body.`);
   const emailAddressTaken = await User.findOne({ emailAddress: req.body.emailAddress });
   if (emailAddressTaken) return res.status(400).send('Someone is already registered with that email address.');
 
@@ -634,6 +643,7 @@ router.put('/update-email-address', auth, checkTokenBlacklist, async (req, res) 
 //Update profilePicture
 router.put('/update-profile-picture', auth, checkTokenBlacklist, async (req, res) => {
   try {
+  if (!req.body.profilePicture) return res.status(400).send(`You must include "profilePicture" (the new profilePicture) in the request body.`);
   const user = await User.findByIdAndUpdate(req.user._id,
     { profilePicture: req.body.profilePicture },
     { new: true }
@@ -649,6 +659,7 @@ router.put('/update-profile-picture', auth, checkTokenBlacklist, async (req, res
 
 //Update aboutMe
 router.put('/update-about-me', auth, checkTokenBlacklist, async (req, res) => {
+  if (!req.body.aboutMe) return res.status(400).send(`You must include "aboutMe" (the new aboutMe) in the request body.`);
   try {
   const user = await User.findByIdAndUpdate(req.user._id,
     { aboutMe: req.body.aboutMe },
@@ -666,6 +677,7 @@ router.put('/update-about-me', auth, checkTokenBlacklist, async (req, res) => {
 //Update birdCall
 router.put('/update-bird-call', auth, checkTokenBlacklist, async (req, res) => {
   try {
+  if (!req.body.birdCall) return res.status(400).send(`You must include "birdCall" (the new birdCall) in the request body.`);
   const user = await User.findByIdAndUpdate(req.user._id,
     { birdCall: req.body.birdCall },
     { new: true }
