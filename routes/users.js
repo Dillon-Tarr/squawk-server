@@ -330,7 +330,7 @@ router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res)
     if (!possibleUnRequestedFriend) var noUser = true;
     else if (possibleUnRequestedFriend.username == req.user.username) var cancelledSelf = true;
     else if (possibleUnRequestedFriend.friends.includes(req.user.username)) var alreadyFriends = true;
-    else if (possibleUnRequestedFriend.incomingFriendRequests.includes(req.user.username)) var noRequestToCancel = true;
+    else if (!possibleUnRequestedFriend.incomingFriendRequests.includes(req.user.username)) var noRequestToCancel = true;
     else if (possibleUnRequestedFriend.outgoingFriendRequests.includes(req.user.username)) var shouldDeclineInstead = true;
 
     if (noUser || cancelledSelf) {
