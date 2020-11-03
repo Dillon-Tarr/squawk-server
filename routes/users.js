@@ -273,9 +273,7 @@ router.put('/request-friend', auth, checkTokenBlacklist, async (req, res) => {
     if (noUser || requestedSelf) {
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
-          $pullAll: { friends: [req.body.username] }
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username], friends: [req.body.username] }
         },
         {new: true});
       user.save();
@@ -287,14 +285,12 @@ router.put('/request-friend', auth, checkTokenBlacklist, async (req, res) => {
     else if (mutuallyRequested){
       const newFriend = await User.findByIdAndUpdate(possibleFriend._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.user.username] },
-          $pullAll: { incomingFriendRequests: [req.user.username] },
+          $pullAll: { outgoingFriendRequests: [req.user.username], incomingFriendRequests: [req.user.username] },
           $push: { friends: req.user.username }
         });
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [possibleFriend.username] },
-          $pullAll: { incomingFriendRequests: [possibleFriend.username] },
+          $pullAll: { outgoingFriendRequests: [possibleFriend.username], incomingFriendRequests: [possibleFriend.username] },
           $push: { friends: possibleFriend.username }
         },
         {new: true});
@@ -336,9 +332,7 @@ router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res)
     if (noUser || cancelledSelf) {
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
-          $pullAll: { friends: [req.body.username] }
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username], friends: [req.body.username] }
         },
         {new: true});
       user.save();
@@ -348,8 +342,7 @@ router.put('/cancel-friend-request', auth, checkTokenBlacklist, async (req, res)
     else if (alreadyFriends) {
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username] }
         },
         {new: true});
       user.save();
@@ -398,9 +391,7 @@ router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res)
     if (noUser || acceptedSelf){
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
-          $pullAll: { friends: [req.body.username] }
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username], friends: [req.body.username] }
         },
         {new: true});
       user.save();
@@ -410,8 +401,7 @@ router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res)
     else if (alreadyFriends || noRequestToAccept){
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username] }
         },
         {new: true});
       user.save();
@@ -421,14 +411,12 @@ router.put('/accept-friend-request', auth, checkTokenBlacklist, async (req, res)
     else {
       const newFriend = await User.findByIdAndUpdate(possibleNewFriend._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.user.username] },
-          $pullAll: { incomingFriendRequests: [req.user.username] },
+          $pullAll: { outgoingFriendRequests: [req.user.username], incomingFriendRequests: [req.user.username] },
           $push: { friends: req.user.username }
         });
       const user = await User.findByIdAndUpdate(req.user._id,
         {
-          $pullAll: { outgoingFriendRequests: [req.body.username] },
-          $pullAll: { incomingFriendRequests: [req.body.username] },
+          $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username] },
           $push: { friends: req.body.username }
         },
         {new: true});
@@ -474,15 +462,11 @@ router.put('/remove-friend', auth, checkTokenBlacklist, async (req, res) => {
     const exFriend = await User.findOneAndUpdate(
       { username: req.body.username },
       {
-        $pullAll: { outgoingFriendRequests: [req.user.username] },
-        $pullAll: { incomingFriendRequests: [req.user.username] },
-        $pullAll: { friends: [req.user.username] }
+        $pullAll: { outgoingFriendRequests: [req.user.username], incomingFriendRequests: [req.user.username], friends: [req.user.username] }
       });
     const user = await User.findByIdAndUpdate(req.user._id,
       {
-        $pullAll: { outgoingFriendRequests: [req.body.username] },
-        $pullAll: { incomingFriendRequests: [req.body.username] },
-        $pullAll: { friends: [req.body.username] }
+        $pullAll: { outgoingFriendRequests: [req.body.username], incomingFriendRequests: [req.body.username], friends: [req.body.username] }
       },
       {new: true});
     if (exFriend) exFriend.save();
