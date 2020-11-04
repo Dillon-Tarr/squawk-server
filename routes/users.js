@@ -133,7 +133,7 @@ router.delete('/delete-account', auth, checkTokenBlacklist, async (req, res) => 
 //Create a new post
 router.post('/create-post', auth, checkTokenBlacklist, async (req, res) => {
   try {
-    if (!(req.body.text && req.body.imageString)) return res.status(400).send('"text" and "imageString" must be supplied in the request body.');
+    if (!(req.body.text || req.body.imageString)) return res.status(400).send('"text" and/or "imageString" must be supplied in the request body.');
     const post = {
       author: req.user.username,
       text: req.body.text,
